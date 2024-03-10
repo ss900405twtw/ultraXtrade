@@ -1,11 +1,13 @@
 import json
 import sys
 import os
+import numpy as np
 from loguru import logger
 from pathlib import Path
 import argparse
 from factory import crawler_factory
 from database import DatabaseManager
+from utils import get_al_listed_stocks, get_all_otc_stocks
 
 logger.remove()
 logger.add(sys.stdout, level="DEBUG")
@@ -29,6 +31,8 @@ def db_update_main():
 
     with open(my_sql_login_file) as json_file:
         mysql_db_settings = json.load(json_file)
+    db_manager = DatabaseManager(mysql_db_settings)
+
 
     login_kws = {}
     if os.path.exists(shioaji_login_file):
@@ -37,9 +41,9 @@ def db_update_main():
 
 
     crawler = crawler_factory(args.table, **login_kws)
-    db_manager = DatabaseManager(mysql_db_settings)
-    all_symbols = db_manager.get_all_stock_id(args.table)
-    all_symbols = [str(item[0]) for item in all_symbols]
+    listed_stocks = get_al_listed_stocks()
+    otc_stocks = get_all_otc_stocks()
+    all_symbols = listed_stocks | otc_stocks
     db_manager.backFillKbars(all_symbols, args.table, crawler)
 
 

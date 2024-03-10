@@ -1,3 +1,5 @@
+import sys
+
 from .crawler import Crawler
 from FinMind.data import DataLoader
 import os
@@ -10,7 +12,6 @@ class finmindCrawler(Crawler):
         api = DataLoader()
         self.api = api
         logger.info(f"finmind api init!")
-
     def __del__(self):
         logger.info(f"finmind api logout!")
 
@@ -35,6 +36,8 @@ class finmindCrawler(Crawler):
             start_date=start_date,
             end_date=end_date
         )
+        if(len(df)) == 0:
+            return df
         df = df[["date", "open", "max", "min", "close", "Trading_Volume"]]
         df['date'] = pd.to_datetime(df["date"].str.split(' ', 1).str[0])
         df.rename(columns={'date': 'ts', 'open': 'Open', 'max': 'High', 'min': 'Low', 'close': 'Close','Trading_Volume': 'Volume'}, inplace=True)

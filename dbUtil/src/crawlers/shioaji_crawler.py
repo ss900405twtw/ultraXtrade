@@ -39,6 +39,8 @@ class shioajiCrawler(Crawler):
 
         kbars = self.api.kbars(contract, start=start_date, end=end_date)
         df = pd.DataFrame({**kbars})
+        if (len(df)) == 0:
+            return df
         df.ts = pd.to_datetime(df.ts)
         df.drop('Amount', axis=1, inplace=True)
         df["symbol_id"] = symbol_id

@@ -56,26 +56,34 @@ class DatabaseManager:
 
     def backFillKbars(self, symbol_ids, table, crawler):
         today = get_today()
+        today = add_N_Days(date=today, days=-1)
         if not self.checkTableExist(table):
             logger.error(f"table: {table} not exists, please check!")
             return
 
+        logger.info(f"backFilling {len(symbol_ids)} symbols to table: {table}")
+        cnt = 0
         for symbol_id in symbol_ids:
+            cnt += 1
             lastdatetime = self.checkLastTs(table, symbol_id)
             if (self.checkIdxExist(table, symbol_id)):
 
                 start = add_N_Days(date=lastdatetime.date(), days=1)
                 end = today
                 if (start < end):
-                    logger.info(f"update exists symbol: {symbol_id} from {start} to {end} to table: {table} ...")
+                    logger.info(f"update exists symbol: {symbol_id} from {start} to {end} to table: {table}, {cnt}/{len(symbol_ids)}...")
                 else:
-                    logger.info(f"symbol: {symbol_id} is already up to date: {start} ...")
+                    logger.info(f"symbol: {symbol_id} is already up to date: from: {start} to {end}, {cnt}/{len(symbol_ids)} ...")
                     continue
             else:
-                logger.warning(f"symbol: {symbol_id} not exists in table: {table}, please check!")
-                continue
+                start = '2010-01-01'
+                end = today
+                logger.warning(f"update new symbol: {symbol_id} to table: {table}, {cnt}/{len(symbol_ids)}")
 
             df = crawler.fetch_data_by_api(symbol_id, str(start), str(end))
+            if len(df) == 0:
+                logger.error(f"symbol: {symbol_id} is empty, please check!, {cnt}/{len(symbol_ids)}")
+                continue
             time.sleep(5)
             try:
                 df.to_sql(name=table, con=self.engine, if_exists='append', index=False)

@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS demo4;
 use demo4;
 
-/*<REGION>_<SYMBOL>_<DATA_TYPE>_<PERIOD>*/
+/* table format: <REGION>_<SYMBOL>_<DATA_TYPE>_<PERIOD>*/
 
 
 CREATE TABLE IF NOT EXISTS tw_stock_price_minute (
