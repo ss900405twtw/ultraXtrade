@@ -1,0 +1,11 @@
+pandas
+numpy
+matplotlib
+pymysql
+sqlalchemy
+mysqlclient
+selenium
+webdriver_manager
+shioaji[speed]
+yfinance
+FinMind
