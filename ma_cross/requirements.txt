@@ -9,3 +9,4 @@ webdriver_manager
 shioaji[speed]
 yfinance
 FinMind
+connection
